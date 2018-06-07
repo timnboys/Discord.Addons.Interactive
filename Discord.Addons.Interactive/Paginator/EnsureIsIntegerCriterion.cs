@@ -4,7 +4,7 @@ using Discord.WebSocket;
 
 namespace Discord.Addons.Interactive
 {
-    internal class EnsureIsIntegerCriterion : ICriterion<SocketMessage>
+    public class EnsureIsIntegerCriterion : ICriterion<SocketMessage>
     {
         public Task<bool> JudgeAsync(SocketCommandContext sourceContext, SocketMessage parameter)
         {

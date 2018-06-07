@@ -4,7 +4,7 @@ using Discord.WebSocket;
 
 namespace Discord.Addons.Interactive
 {
-    internal class EnsureReactionFromSourceUserCriterion : ICriterion<SocketReaction>
+    public class EnsureReactionFromSourceUserCriterion : ICriterion<SocketReaction>
     {
         public Task<bool> JudgeAsync(SocketCommandContext sourceContext, SocketReaction parameter)
         {
