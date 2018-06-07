@@ -13,10 +13,10 @@ namespace Discord.Addons.Interactive
         public IUserMessage Message { get; private set; }
 
         public RunMode RunMode => RunMode.Sync;
-        public ICriterion<SocketReaction> Criterion => _criterion;
+        public ICriterion<SocketReaction> Criterion { get; }
+
         public TimeSpan? Timeout => options.Timeout;
 
-        private readonly ICriterion<SocketReaction> _criterion;
         private readonly PaginatedMessage _pager;
 
         private PaginatedAppearanceOptions options => _pager.Options;
@@ -31,12 +31,12 @@ namespace Discord.Addons.Interactive
         {
             Interactive = interactive;
             Context = sourceContext;
-            _criterion = criterion ?? new EmptyCriterion<SocketReaction>();
+            Criterion = criterion ?? new EmptyCriterion<SocketReaction>();
             _pager = pager;
             pages = _pager.Pages.Count();
         }
 
-        public async Task DisplayAsync()
+        public async Task DisplayAsync(ReactionList Reactions)
         {
             var embed = BuildEmbed();
             var message = await Context.Channel.SendMessageAsync(_pager.Content, embed: embed).ConfigureAwait(false);
@@ -45,26 +45,34 @@ namespace Discord.Addons.Interactive
             // Reactions take a while to add, don't wait for them
             _ = Task.Run(async () =>
             {
-                await message.AddReactionAsync(options.First);
-                await message.AddReactionAsync(options.Back);
-                await message.AddReactionAsync(options.Next);
-                await message.AddReactionAsync(options.Last);
+                if (Reactions.First) await message.AddReactionAsync(options.First);
+                if (Reactions.Backward) await message.AddReactionAsync(options.Back);
+                if (Reactions.Forward) await message.AddReactionAsync(options.Next);
+                if (Reactions.Last) await message.AddReactionAsync(options.Last);
 
-                var manageMessages = (Context.Channel is IGuildChannel guildChannel)
-                    ? (Context.User as IGuildUser).GetPermissions(guildChannel).ManageMessages
-                    : false;
 
-                if (options.JumpDisplayOptions == JumpDisplayOptions.Always
-                    || (options.JumpDisplayOptions == JumpDisplayOptions.WithManageMessages && manageMessages))
-                    await message.AddReactionAsync(options.Jump);
+                var manageMessages = Context.Channel is IGuildChannel guildChannel &&
+                                     (Context.User as IGuildUser).GetPermissions(guildChannel).ManageMessages;
 
-                await message.AddReactionAsync(options.Stop);
+                if (Reactions.Jump)
+                {
+                    if (options.JumpDisplayOptions == JumpDisplayOptions.Always || options.JumpDisplayOptions == JumpDisplayOptions.WithManageMessages && manageMessages)
+                    {
+                        await message.AddReactionAsync(options.Jump);
+                    }
+                }
 
-                if (options.DisplayInformationIcon)
-                    await message.AddReactionAsync(options.Info);
+                if (Reactions.Trash)
+                {
+                    await message.AddReactionAsync(options.Stop);
+                }
+
+                if (Reactions.Info)
+                {
+                    if (options.DisplayInformationIcon) await message.AddReactionAsync(options.Info);
+                }
             });
-            // TODO: (Next major version) timeouts need to be handled at the service-level!
-            if (Timeout.HasValue && Timeout.Value != null)
+            if (Timeout.HasValue)
             {
                 _ = Task.Delay(Timeout.Value).ContinueWith(_ =>
                 {
@@ -132,13 +140,18 @@ namespace Discord.Addons.Interactive
         
         protected Embed BuildEmbed()
         {
-            return new EmbedBuilder()
+            var current = _pager.Pages.ElementAt(page - 1);
+            var builder = new EmbedBuilder()
                 .WithAuthor(_pager.Author)
                 .WithColor(_pager.Color)
-                .WithDescription(_pager.Pages.ElementAt(page-1).ToString())
+                .WithDescription(_pager.Pages.ElementAt(page - 1).Description)
+                .WithImageUrl(current.ImageUrl ?? _pager.DefaultImageUrl)
+                .WithUrl(current.Url)
                 .WithFooter(f => f.Text = string.Format(options.FooterFormat, page, pages))
-                .WithTitle(_pager.Title)
-                .Build();
+                .WithTitle(current.Title ?? _pager.Title);
+            builder.Fields = _pager.Pages.ElementAt(page - 1).Fields;
+
+            return builder.Build();
         }
         private async Task RenderAsync()
         {

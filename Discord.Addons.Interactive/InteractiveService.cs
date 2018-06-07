@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Discord.Commands;
 using Discord.WebSocket;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Discord.Addons.Interactive
 {
@@ -11,8 +10,8 @@ namespace Discord.Addons.Interactive
     {
         public DiscordSocketClient Discord { get; }
 
-        private Dictionary<ulong, IReactionCallback> _callbacks;
-        private TimeSpan _defaultTimeout;
+        private readonly Dictionary<ulong, IReactionCallback> _callbacks;
+        private readonly TimeSpan _defaultTimeout;
 
         public InteractiveService(DiscordSocketClient discord, TimeSpan? defaultTimeout = null)
         {
@@ -59,6 +58,16 @@ namespace Discord.Addons.Interactive
                 return null;
         }
 
+        public async Task<IUserMessage> SendMessageWithReactionCallbacksAsync(SocketCommandContext context, ReactionCallbackData callbacks, bool fromSourceUser = true)
+        {
+            var criterion = new Criteria<SocketReaction>();
+            if (fromSourceUser)
+                criterion.AddCriterion(new EnsureReactionFromSourceUserCriterion());
+            var callback = new InlineReactionCallback(this, context, callbacks, criterion);
+            await callback.DisplayAsync().ConfigureAwait(false);
+            return callback.Message;
+        }
+
         public async Task<IUserMessage> ReplyAndDeleteAsync(SocketCommandContext context, string content, bool isTTS = false, Embed embed = null, TimeSpan? timeout = null, RequestOptions options = null)
         {
             timeout = timeout ?? _defaultTimeout;
@@ -69,10 +78,10 @@ namespace Discord.Addons.Interactive
             return message;
         }
 
-        public async Task<IUserMessage> SendPaginatedMessageAsync(SocketCommandContext context, PaginatedMessage pager, ICriterion<SocketReaction> criterion = null)
+        public async Task<IUserMessage> SendPaginatedMessageAsync(SocketCommandContext context, PaginatedMessage pager, ReactionList Reactions, ICriterion<SocketReaction> criterion = null)
         {
             var callback = new PaginatedMessageCallback(this, context, pager, criterion);
-            await callback.DisplayAsync().ConfigureAwait(false);
+            await callback.DisplayAsync(Reactions).ConfigureAwait(false);
             return callback.Message;
         }
 
