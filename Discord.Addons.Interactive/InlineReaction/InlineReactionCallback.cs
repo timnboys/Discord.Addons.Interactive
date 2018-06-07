@@ -55,12 +55,27 @@ namespace Discord.Addons.Interactive
 
         public async Task<bool> HandleCallbackAsync(SocketReaction reaction)
         {
+            //If reaction is not specified in our Callback List, ignore
             var reactionCallbackItem = data.Callbacks.FirstOrDefault(t => t.Reaction.Equals(reaction.Emote));
             if (reactionCallbackItem == null)
                 return false;
 
-            await reactionCallbackItem.Callback(Context);
-            return true;
+            if (data.SingleUsePerUser)
+            {
+                //Ensure that we only allow users to react a single time.
+                if (!data.ReactorIDs.Contains(reaction.UserId))
+                {
+                    await reactionCallbackItem.Callback(Context, reaction);
+                    data.ReactorIDs.Add(reaction.UserId);
+                }
+            }
+            else
+            {
+
+                await reactionCallbackItem.Callback(Context, reaction);
+            }
+
+            return data.ExpiresAfterUse;
         }
     }
 }

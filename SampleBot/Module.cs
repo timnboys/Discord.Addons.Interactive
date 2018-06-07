@@ -139,14 +139,14 @@ namespace SampleBot
 
         // InlineReactionReplyAsync will send a message and adds reactions on it.
         // Once an user adds a reaction, the callback is fired.
-        // If callback was successfull next callback is not handled (message is unsubscribed).
+        // If callback was successfull next callback is not handled
         // Unsuccessful callback is a reaction that did not have a callback.
         [Command("reaction")]
         public async Task Test_ReactionReply()
         {
-            await InlineReactionReplyAsync(new ReactionCallbackData("text")
-                .WithCallback(new Emoji("👍"), c => c.Channel.SendMessageAsync("You've replied with 👍"))
-                .WithCallback(new Emoji("👎"), c => c.Channel.SendMessageAsync("You've replied with 👎"))
+            await InlineReactionReplyAsync(new ReactionCallbackData("text", null, false, false)
+                .WithCallback(new Emoji("👍"), (c, r) => c.Channel.SendMessageAsync($"{r.User.Value.Mention} replied with 👍"))
+                .WithCallback(new Emoji("👎"), (c, r) => c.Channel.SendMessageAsync($"{r.User.Value.Mention} replied with 👎"))
             );
         }
         [Command("embedreaction")]
@@ -161,9 +161,12 @@ namespace SampleBot
                 .AddField(two.Name, "Drink", true)
                 .Build();
 
-            await InlineReactionReplyAsync(new ReactionCallbackData("text", embed)
-                .WithCallback(one, c => c.Channel.SendMessageAsync("Here you go :beer:"))
-                .WithCallback(two, c => c.Channel.SendMessageAsync("Here you go :tropical_drink:"))
+            //This message does not expire after a single
+            //it will not allow a user to react more than once
+            //it allows more than one user to react
+            await InlineReactionReplyAsync(new ReactionCallbackData("text", embed, false, true)
+                .WithCallback(one, (c, r) => c.Channel.SendMessageAsync($"{r.User.Value.Mention} Here you go :beer:") )
+                .WithCallback(two, (c, r) => c.Channel.SendMessageAsync($"{r.User.Value.Mention} Here you go :tropical_drink:")), false
             );
         }
     }

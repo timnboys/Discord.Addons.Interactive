@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Discord.WebSocket;
 
 namespace Discord.Addons.Interactive
 {
@@ -9,20 +10,26 @@ namespace Discord.Addons.Interactive
     {
         private readonly ICollection<ReactionCallbackItem> items;
 
+        public bool ExpiresAfterUse { get; }
+        public bool SingleUsePerUser { get; }
+        public List<ulong> ReactorIDs { get; }
         public string Text { get; }
         public Embed Embed { get; }
         public TimeSpan? Timeout { get; }
         public IEnumerable<ReactionCallbackItem> Callbacks => items;
 
-        public ReactionCallbackData(string text, Embed embed = null, TimeSpan? timeout = null)
+        public ReactionCallbackData(string text, Embed embed = null, bool expuresafteruse = true, bool singleuseperuser = true, TimeSpan? timeout = null)
         {
+            SingleUsePerUser = singleuseperuser;
+            ExpiresAfterUse = expuresafteruse;
+            ReactorIDs = new List<ulong>();
             Text = text;
             Embed = embed;
             Timeout = timeout;
             items = new List<ReactionCallbackItem>();
         }
 
-        public ReactionCallbackData WithCallback(IEmote reaction, Func<SocketCommandContext, Task> callback)
+        public ReactionCallbackData WithCallback(IEmote reaction, Func<SocketCommandContext, SocketReaction, Task> callback)
         {
             var item = new ReactionCallbackItem(reaction, callback);
             items.Add(item);
