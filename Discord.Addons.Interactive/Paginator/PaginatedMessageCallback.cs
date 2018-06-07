@@ -150,14 +150,32 @@ namespace Discord.Addons.Interactive
         protected Embed BuildEmbed()
         {
             var current = _pager.Pages.ElementAt(page - 1);
-            var builder = new EmbedBuilder()
+
+            var builder = new EmbedBuilder
+            {
+                Author = current.Author ?? _pager.Author,
+                Title = current.Title ?? _pager.Title,
+                Url = current.Url ?? _pager.Url,
+                Description = current.Description ?? _pager.Description,
+                ImageUrl = current.ImageUrl ?? _pager.ImageUrl,
+                Color = current.Color ?? _pager.Color,
+                Fields = current.Fields ?? _pager.Fields,
+                Footer = current.FooterOverride ?? _pager.FooterOverride ?? new EmbedFooterBuilder
+                {
+                    Text = string.Format(options.FooterFormat, page, pages)
+                },
+                ThumbnailUrl = current.ThumbnailUrl ?? _pager.ThumbnailUrl,
+                Timestamp = current.TimeStamp ?? _pager.TimeStamp
+            };
+
+            /*var builder = new EmbedBuilder()
                 .WithAuthor(_pager.Author)
                 .WithColor(_pager.Color)
                 .WithDescription(_pager.Pages.ElementAt(page - 1).Description)
                 .WithImageUrl(current.ImageUrl ?? _pager.DefaultImageUrl)
                 .WithUrl(current.Url)
                 .WithFooter(f => f.Text = string.Format(options.FooterFormat, page, pages))
-                .WithTitle(current.Title ?? _pager.Title);
+                .WithTitle(current.Title ?? _pager.Title);*/
             builder.Fields = _pager.Pages.ElementAt(page - 1).Fields;
 
             return builder.Build();
