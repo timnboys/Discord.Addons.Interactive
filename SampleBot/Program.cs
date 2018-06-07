@@ -59,7 +59,7 @@ namespace SampleBot
 
         private static Task Client_Log(LogMessage arg)
         {
-            Console.Write(arg.Message);
+            Console.WriteLine(arg.Message);
             return Task.CompletedTask;
         }
     }

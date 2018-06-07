@@ -2,13 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.0.1</Version>
-    <Authors>foxbot</Authors>
+    <Version>2.0.0-Beta</Version>
+    <Authors>PassiveModding;foxbot</Authors>
     
     <PackageId>Discord.Addons.Interactive</PackageId>
     <PackageLicenseUrl>https://opensource.org/licenses/isc</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/foxbot/Discord.Addons.Interactive</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/PassiveModding/Discord.Addons.Interactive</PackageProjectUrl>
     <PackageTags>discord;discord.net</PackageTags>
+    <AssemblyName>Discord.Addons.Interactive</AssemblyName>
+    <RootNamespace>Discord.Addons.Interactive</RootNamespace>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     
   </PropertyGroup>
 

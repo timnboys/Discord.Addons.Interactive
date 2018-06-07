@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Discord.Commands;
+using Discord.Rest;
 using Discord.WebSocket;
 
 namespace Discord.Addons.Interactive
@@ -9,7 +10,7 @@ namespace Discord.Addons.Interactive
     public class PaginatedMessageCallback : IReactionCallback
     {
         public SocketCommandContext Context { get; }
-        public InteractiveService Interactive { get; private set; }
+        public InteractiveService Interactive { get; }
         public IUserMessage Message { get; private set; }
 
         public RunMode RunMode => RunMode.Sync;
@@ -74,10 +75,18 @@ namespace Discord.Addons.Interactive
             });
             if (Timeout.HasValue)
             {
+                Displaytimeout(message, Message);
+            }
+        }
+
+        public void Displaytimeout(RestUserMessage M1, IUserMessage M2)
+        {
+            if (Timeout.HasValue)
+            {
                 _ = Task.Delay(Timeout.Value).ContinueWith(_ =>
                 {
-                    Interactive.RemoveReactionCallback(message);
-                    _ = Message.DeleteAsync();
+                    Interactive.RemoveReactionCallback(M1);
+                    M2.DeleteAsync();
                 });
             }
         }
