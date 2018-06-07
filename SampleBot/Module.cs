@@ -56,7 +56,7 @@ namespace SampleBot
                         new EmbedFieldBuilder
                         {
                             Name = "Field 1",
-                            Value = "Field 2 Description"
+                            Value = "Field 1 Description"
                         }
 
                     },
