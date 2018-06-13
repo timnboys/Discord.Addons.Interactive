@@ -150,7 +150,7 @@ namespace SampleBot
             );
         }
         [Command("embedreaction")]
-        public async Task Test_EmedReactionReply()
+        public async Task Test_EmedReactionReply(bool expiresafteruse, bool singleuseperuser, bool sourceuser)
         {
             var one = new Emoji("1⃣");
             var two = new Emoji("2⃣");
@@ -164,9 +164,9 @@ namespace SampleBot
             //This message does not expire after a single
             //it will not allow a user to react more than once
             //it allows more than one user to react
-            await InlineReactionReplyAsync(new ReactionCallbackData("text", embed, false, true)
+            await InlineReactionReplyAsync(new ReactionCallbackData("text", embed, expiresafteruse, singleuseperuser)
                 .WithCallback(one, (c, r) => c.Channel.SendMessageAsync($"{r.User.Value.Mention} Here you go :beer:") )
-                .WithCallback(two, (c, r) => c.Channel.SendMessageAsync($"{r.User.Value.Mention} Here you go :tropical_drink:")), false
+                .WithCallback(two, (c, r) => c.Channel.SendMessageAsync($"{r.User.Value.Mention} Here you go :tropical_drink:")), sourceuser
             );
         }
     }

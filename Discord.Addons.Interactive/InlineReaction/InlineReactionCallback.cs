@@ -71,7 +71,6 @@ namespace Discord.Addons.Interactive
             }
             else
             {
-
                 await reactionCallbackItem.Callback(Context, reaction);
             }
 
