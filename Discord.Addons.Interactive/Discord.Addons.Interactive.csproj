@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>2.0.2-Beta</Version>
+    <Version>2.0.3-Beta</Version>
     <Authors>PassiveModding</Authors>
     
     <PackageId>Discord.Addons.PassiveInteractive</PackageId>
@@ -18,7 +18,9 @@ https://github.com/foxbot/Discord.Addons.Interactive/pull/9
 
 original repo can be found here:
 https://github.com/foxbot/Discord.Addons.Interactive</PackageReleaseNotes>
-    <Description>A fork of Discord.Addons.Interactive, Adding more functionality</Description>
+    <Description>A fork of Discord.Addons.Interactive, Adding more functionality including
+-Inline Reactions
+-Full Paginater Customization</Description>
     
   </PropertyGroup>
 
