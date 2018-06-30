@@ -16,9 +16,10 @@ namespace Discord.Addons.Interactive
         public string Text { get; }
         public Embed Embed { get; }
         public TimeSpan? Timeout { get; }
+        public Func<SocketCommandContext, Task> TimeoutCallback { get; }
         public IEnumerable<ReactionCallbackItem> Callbacks => items;
 
-        public ReactionCallbackData(string text, Embed embed = null, bool expuresafteruse = true, bool singleuseperuser = true, TimeSpan? timeout = null)
+        public ReactionCallbackData(string text, Embed embed = null, bool expuresafteruse = true, bool singleuseperuser = true, TimeSpan? timeout = null, Func<SocketCommandContext, Task> timeoutCallback = null)
         {
             SingleUsePerUser = singleuseperuser;
             ExpiresAfterUse = expuresafteruse;
@@ -26,6 +27,7 @@ namespace Discord.Addons.Interactive
             Text = text;
             Embed = embed;
             Timeout = timeout;
+            TimeoutCallback = timeoutCallback;
             items = new List<ReactionCallbackItem>();
         }
 

@@ -164,7 +164,7 @@ namespace SampleBot
             //This message does not expire after a single
             //it will not allow a user to react more than once
             //it allows more than one user to react
-            await InlineReactionReplyAsync(new ReactionCallbackData("text", embed, expiresafteruse, singleuseperuser)
+            await InlineReactionReplyAsync(new ReactionCallbackData("text", embed, expiresafteruse, singleuseperuser, TimeSpan.FromSeconds(20), (c) =>  c.Channel.SendMessageAsync("Timed Out!"))
                 .WithCallback(one, (c, r) => c.Channel.SendMessageAsync($"{r.User.Value.Mention} Here you go :beer:") )
                 .WithCallback(two, (c, r) => c.Channel.SendMessageAsync($"{r.User.Value.Mention} Here you go :tropical_drink:")), sourceuser
             );
