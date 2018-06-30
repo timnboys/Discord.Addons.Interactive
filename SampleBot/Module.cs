@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Discord;
-using Discord.Addons.Interactive;
-using Discord.Commands;
+﻿// ReSharper disable All
 
 namespace SampleBot
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+
+    using Discord;
+    using Discord.Addons.Interactive;
+    using Discord.Commands;
+
     public class Module : InteractiveBase
     {
         // DeleteAfterAsync will send a message and asynchronously delete it after the timeout has popped

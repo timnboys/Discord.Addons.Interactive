@@ -1,51 +1,106 @@
-﻿using System;
-using System.Reflection;
-using System.Threading.Tasks;
-using Discord;
-using Discord.Commands;
-using Discord.WebSocket;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace SampleBot
+﻿namespace SampleBot
 {
+    using System;
+    using System.Reflection;
+    using System.Threading.Tasks;
+
+    using Discord;
+    using Discord.Commands;
+    using Discord.WebSocket;
+
+    using Microsoft.Extensions.DependencyInjection;
+
+    /// <summary>
+    /// The command handler.
+    /// </summary>
     public class CommandHandler
     {
-        public static int Commands;
-        private readonly DiscordSocketClient _client;
-        private readonly CommandService _commands;
-        public IServiceProvider Provider;
+        /// <summary>
+        /// The discord client.
+        /// </summary>
+        private readonly DiscordSocketClient client;
 
+        /// <summary>
+        /// The command service
+        /// </summary>
+        private readonly CommandService commandService;
+
+        /// <summary>
+        /// The service provider.
+        /// </summary>
+        private readonly IServiceProvider provider;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommandHandler"/> class.
+        /// </summary>
+        /// <param name="provider">
+        /// The provider.
+        /// </param>
         public CommandHandler(IServiceProvider provider)
         {
-            Provider = provider;
-            _client = Provider.GetService<DiscordSocketClient>();
-            _commands = new CommandService();
+            this.provider = provider;
+            client = this.provider.GetService<DiscordSocketClient>();
+            commandService = new CommandService();
 
-            _client.MessageReceived += _client_MessageReceived;
-            _client.Ready += Client_Ready;
+            client.MessageReceived += Client_MessageReceivedAsync;
+            client.Ready += Client_ReadyAsync;
+        }
+        
+        /// <summary>
+        /// Initializes all bot modules
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        public Task ConfigureAsync()
+        {
+            return commandService.AddModulesAsync(Assembly.GetEntryAssembly());
         }
 
-
-        private async Task Client_Ready()
+        /// <summary>
+        /// The ready event
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        private async Task Client_ReadyAsync()
         {
-            var application = await _client.GetApplicationInfoAsync();
+            var application = await client.GetApplicationInfoAsync();
             Console.WriteLine($"Invite: https://discordapp.com/oauth2/authorize?client_id={application.Id}&scope=bot&permissions=2146958591");
         }
 
-        private async Task _client_MessageReceived(SocketMessage SocketMessage)
+        /// <summary>
+        /// The _client_ message received async.
+        /// </summary>
+        /// <param name="socketMessage">
+        /// The socket message.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        private async Task Client_MessageReceivedAsync(SocketMessage socketMessage)
         {
-            //Check to ensure that we are only receiving valid messages from users only!
-            if (!(SocketMessage is SocketUserMessage message)) return;
-            var context = new SocketCommandContext(_client, message);
-            if (context.User.IsBot) return;
+            // Check to ensure that we are only receiving valid messages from users only!
+            if (!(socketMessage is SocketUserMessage message))
+            {
+                return;
+            }
+
+            var context = new SocketCommandContext(client, message);
+            if (context.User.IsBot)
+            {
+                return;
+            }
 
             var argPos = 0;
-            //Ensure that we filter out all messages that do not start with the bot prefix
 
-            if (!(message.HasMentionPrefix(_client.CurrentUser, ref argPos) || message.HasStringPrefix(".", ref argPos))) return;
+            // Ensure that we filter out all messages that do not start with the bot prefix
+            if (!(message.HasMentionPrefix(client.CurrentUser, ref argPos) || message.HasStringPrefix(".", ref argPos)))
+            {
+                return;
+            }
 
-
-            var result = await _commands.ExecuteAsync(context, argPos, Provider);
+            var result = await commandService.ExecuteAsync(context, argPos, provider);
             if (result.IsSuccess)
             {
                 Console.WriteLine("Command Success");
@@ -54,7 +109,7 @@ namespace SampleBot
             {
                 try
                 {
-                    await context.Channel.SendMessageAsync("", false, new EmbedBuilder
+                    await context.Channel.SendMessageAsync(string.Empty, false, new EmbedBuilder
                     {
                         Title = $"{context.User.Username.ToUpper()} ERROR",
                         Description = result.ErrorReason
@@ -62,14 +117,9 @@ namespace SampleBot
                 }
                 catch
                 {
-                    //
+                    // Ignore errors
                 }
             }
-        }
-
-        public async Task ConfigureAsync()
-        {
-            await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
         }
     }
 }

@@ -1,33 +1,56 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Discord;
-using Discord.Addons.Interactive;
-using Discord.Commands;
-using Discord.WebSocket;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace SampleBot
+﻿namespace SampleBot
 {
+    using System;
+    using System.IO;
+    using System.Threading.Tasks;
+
+    using Discord;
+    using Discord.Addons.Interactive;
+    using Discord.Commands;
+    using Discord.WebSocket;
+
+    using Microsoft.Extensions.DependencyInjection;
+
+    /// <summary>
+    /// The program.
+    /// </summary>
     public class Program
     {
-        private CommandHandler _handler;
-        public DiscordSocketClient Client;
+        /// <summary>
+        /// The client.
+        /// </summary>
+        private DiscordSocketClient client;
 
+        /// <summary>
+        /// The handler.
+        /// </summary>
+        private CommandHandler handler;
+
+        /// <summary>
+        /// The first thing that will fire then the bor starts
+        /// </summary>
+        /// <param name="args">
+        /// The args.
+        /// </param>
         public static void Main(string[] args)
         {
-            new Program().Start().GetAwaiter().GetResult();
+            new Program().StartAsync().GetAwaiter().GetResult();
         }
 
-        public async Task Start()
+        /// <summary>
+        /// Initializes the bot
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        public async Task StartAsync()
         {
             if (!Directory.Exists(Path.Combine(AppContext.BaseDirectory, "setup/")))
+            {
                 Directory.CreateDirectory(Path.Combine(AppContext.BaseDirectory, "setup/"));
+            }
 
-            Client = new DiscordSocketClient(new DiscordSocketConfig
+            client = new DiscordSocketClient(new DiscordSocketConfig
             {
                 LogLevel = LogSeverity.Info
             });
@@ -36,8 +59,8 @@ namespace SampleBot
 
             try
             {
-                await Client.LoginAsync(TokenType.Bot, token);
-                await Client.StartAsync();
+                await client.LoginAsync(TokenType.Bot, token);
+                await client.StartAsync();
             }
             catch (Exception e)
             {
@@ -46,18 +69,27 @@ namespace SampleBot
             }
 
             var serviceProvider = new ServiceCollection()
-                .AddSingleton(Client)
-                .AddSingleton(new InteractiveService(Client))
+                .AddSingleton(client)
+                .AddSingleton(new InteractiveService(client))
                 .AddSingleton(new CommandService(
                     new CommandServiceConfig { CaseSensitiveCommands = false, ThrowOnError = false })).BuildServiceProvider();
-            _handler = new CommandHandler(serviceProvider);
-            await _handler.ConfigureAsync();
+            handler = new CommandHandler(serviceProvider);
+            await handler.ConfigureAsync();
 
-            Client.Log += Client_Log;
+            client.Log += Client_LogAsync;
             await Task.Delay(-1);
         }
 
-        private static Task Client_Log(LogMessage arg)
+        /// <summary>
+        /// Logs messages
+        /// </summary>
+        /// <param name="arg">
+        /// The arg.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Task"/>.
+        /// </returns>
+        private static Task Client_LogAsync(LogMessage arg)
         {
             Console.WriteLine(arg.Message);
             return Task.CompletedTask;

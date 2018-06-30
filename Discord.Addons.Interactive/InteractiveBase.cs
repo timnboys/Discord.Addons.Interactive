@@ -1,30 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Discord.Commands;
-using Discord.WebSocket;
-
-namespace Discord.Addons.Interactive
+﻿namespace Discord.Addons.Interactive
 {
+    using System;
+    using System.Threading.Tasks;
+
+    using Discord.Commands;
+    using Discord.WebSocket;
+
+    /// <summary>
+    /// The interactive base.
+    /// </summary>
     public class InteractiveBase : InteractiveBase<SocketCommandContext>
     {
     }
-    public class ReactionList
-    {
-        public bool First { get; set; } = false;
-        public bool Last { get; set; } = false;
-        public bool Forward { get; set; } = true;
-        public bool Backward { get; set; } = true;
-        public bool Jump { get; set; } = false;
-        public bool Trash { get; set; } = false;
-        public bool Info { get; set; } = false;
-    }
 
-
+    /// <summary>
+    /// The interactive base.
+    /// </summary>
+    /// <typeparam name="T">
+    /// </typeparam>
     public class InteractiveBase<T> : ModuleBase<T>
         where T : SocketCommandContext
     {
-
+        /// <summary>
+        /// Gets or sets the interactive service.
+        /// </summary>
         public InteractiveService Interactive { get; set; }
 
         public Task<SocketMessage> NextMessageAsync(ICriterion<SocketMessage> criterion, TimeSpan? timeout = null)

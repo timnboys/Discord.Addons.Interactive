@@ -1,11 +1,12 @@
-﻿using Discord.Commands;
-using Discord.WebSocket;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Discord.Addons.Interactive
+﻿namespace Discord.Addons.Interactive
 {
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    using Discord.Commands;
+    using Discord.WebSocket;
+
     /// <summary>
     /// The inline reaction callback.
     /// </summary>
@@ -20,31 +21,6 @@ namespace Discord.Addons.Interactive
         /// The data.
         /// </summary>
         private readonly ReactionCallbackData data;
-
-        /// <summary>
-        /// The run mode.
-        /// </summary>
-        public RunMode RunMode => RunMode.Sync;
-
-        /// <summary>
-        /// Gets the criterion.
-        /// </summary>
-        public ICriterion<SocketReaction> Criterion { get; }
-
-        /// <summary>
-        /// Gets the timeout.
-        /// </summary>
-        public TimeSpan? Timeout { get; }
-
-        /// <summary>
-        /// Gets the context.
-        /// </summary>
-        public SocketCommandContext Context { get; }
-
-        /// <summary>
-        /// Gets the message.
-        /// </summary>
-        public IUserMessage Message { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InlineReactionCallback"/> class.
@@ -75,6 +51,31 @@ namespace Discord.Addons.Interactive
         }
 
         /// <summary>
+        /// The run mode.
+        /// </summary>
+        public RunMode RunMode => RunMode.Sync;
+
+        /// <summary>
+        /// Gets the criterion.
+        /// </summary>
+        public ICriterion<SocketReaction> Criterion { get; }
+
+        /// <summary>
+        /// Gets the timeout.
+        /// </summary>
+        public TimeSpan? Timeout { get; }
+
+        /// <summary>
+        /// Gets the context.
+        /// </summary>
+        public SocketCommandContext Context { get; }
+
+        /// <summary>
+        /// Gets the message.
+        /// </summary>
+        public IUserMessage Message { get; private set; }
+
+        /// <summary>
         /// The display async.
         /// </summary>
         /// <returns>
@@ -102,8 +103,6 @@ namespace Discord.Addons.Interactive
                             interactive.RemoveReactionCallback(message);
                             data.TimeoutCallback?.Invoke(Context);
                         });
-
-
             }
         }
 
