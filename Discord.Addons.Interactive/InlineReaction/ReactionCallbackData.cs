@@ -15,10 +15,15 @@ namespace Discord.Addons.Interactive
 
         public ReactionCallbackData(string text, Embed embed = null, bool expiresAfterUse = true, bool singleUsePerUser = true, TimeSpan? timeout = null, Func<SocketCommandContext, Task> timeoutCallback = null)
         {
+            if (text == null && embed == null)
+            {
+                throw new Exception("Inline reaction must have message data");
+            }
+
             SingleUsePerUser = singleUsePerUser;
             ExpiresAfterUse = expiresAfterUse;
             ReactorIDs = new List<ulong>();
-            Text = text;
+            Text = text ?? "";
             Embed = embed;
             Timeout = timeout;
             TimeoutCallback = timeoutCallback;
