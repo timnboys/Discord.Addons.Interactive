@@ -10,7 +10,7 @@ namespace SampleBot
     using Discord.Addons.Interactive;
     using Discord.Commands;
 
-    public class Module : InteractiveBase
+    public class Module : InteractiveBase<SocketCommandContext>
     {
         // DeleteAfterAsync will send a message and asynchronously delete it after the timeout has popped
         // This method will not block.

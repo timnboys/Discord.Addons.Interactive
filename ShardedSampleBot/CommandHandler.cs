@@ -18,7 +18,7 @@
         /// <summary>
         /// The discord client.
         /// </summary>
-        private readonly DiscordSocketClient client;
+        private readonly DiscordShardedClient client;
 
         /// <summary>
         /// The command service
@@ -39,11 +39,11 @@
         public CommandHandler(IServiceProvider provider)
         {
             this.provider = provider;
-            client = this.provider.GetService<DiscordSocketClient>();
+            client = this.provider.GetService<DiscordShardedClient>();
             commandService = new CommandService();
 
             client.MessageReceived += Client_MessageReceivedAsync;
-            client.Ready += Client_ReadyAsync;
+            client.ShardReady += Client_ReadyAsync;
         }
         
         /// <summary>
@@ -54,7 +54,7 @@
         /// </returns>
         public Task ConfigureAsync()
         {
-            return commandService.AddModulesAsync(Assembly.GetEntryAssembly());
+            return commandService.AddModulesAsync(Assembly.GetEntryAssembly(), provider);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        private async Task Client_ReadyAsync()
+        private async Task Client_ReadyAsync(DiscordSocketClient shard)
         {
             var application = await client.GetApplicationInfoAsync();
             Console.WriteLine($"Invite: https://discordapp.com/oauth2/authorize?client_id={application.Id}&scope=bot&permissions=2146958591");
@@ -86,7 +86,7 @@
                 return;
             }
 
-            var context = new SocketCommandContext(client, message);
+            var context = new ShardedCommandContext(client, message);
             if (context.User.IsBot)
             {
                 return;

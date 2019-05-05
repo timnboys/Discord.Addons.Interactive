@@ -34,16 +34,26 @@
         public InteractiveService(DiscordSocketClient discord, TimeSpan? defaultTimeout = null)
         {
             Discord = discord;
-            Discord.ReactionAdded += HandleReactionAsync;
+            discord.ReactionAdded += HandleReactionAsync;
 
             callbacks = new Dictionary<ulong, IReactionCallback>();
             this.defaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(15);
         }
+
+        public InteractiveService(DiscordShardedClient discord, TimeSpan? defaultTimeout = null)
+        {
+            Discord = discord;
+            discord.ReactionAdded += HandleReactionAsync;
+
+            callbacks = new Dictionary<ulong, IReactionCallback>();
+            this.defaultTimeout = defaultTimeout ?? TimeSpan.FromSeconds(15);
+        }
+
         
         /// <summary>
         /// Gets the client
         /// </summary>
-        public DiscordSocketClient Discord { get; }
+        public IDiscordClient Discord { get; }
 
         /// <summary>
         /// waits for the next message in the channel
@@ -243,7 +253,14 @@
         /// </summary>
         public void Dispose()
         {
-            Discord.ReactionAdded -= HandleReactionAsync;
+            if (Discord is DiscordShardedClient shardedClient)
+            {
+                shardedClient.ReactionAdded -= HandleReactionAsync;
+            }
+            else if (Discord is DiscordSocketClient socketClient)
+            {
+                socketClient.ReactionAdded -= HandleReactionAsync;
+            }
         }
 
         /// <summary>

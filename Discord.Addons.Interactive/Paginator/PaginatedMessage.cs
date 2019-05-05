@@ -11,7 +11,7 @@
         /// <summary>
         /// Gets or sets the pages.
         /// </summary>
-        public IEnumerable<Page> Pages { get; set; }
+        public IEnumerable<Page> Pages { get; set; } = new List<Page>();
 
         /// <summary>
         /// Gets or sets the content.
