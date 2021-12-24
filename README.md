@@ -12,3 +12,6 @@ An addon for [Discord.Net](https://github.com/RogueException/Discord.Net) that a
 ## Usage
 
 To use, add an `InteractiveService` to your service provider. It is also recommended to make your modules inherit from `InteractiveBase`
+
+# Updates
+Updated for Discord.Net v3.0.0 Usage.
