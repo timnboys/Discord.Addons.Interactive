@@ -305,7 +305,44 @@
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        private async Task HandleReactionAsync(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
+        //private async Task HandleReactionAsync(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
+        //{
+        //    if (reaction.UserId == Discord.CurrentUser.Id)
+        //    {
+        //        return;
+        //    }
+
+        //    if (!callbacks.TryGetValue(message.Id, out var callback))
+        //    {
+        //        return;
+        //    }
+
+        //    if (!(await callback.Criterion.JudgeAsync(callback.Context, reaction).ConfigureAwait(false)))
+        //    {
+        //        return;
+        //    }
+
+        //    switch (callback.RunMode)
+        //    {
+        //        case RunMode.Async:
+        //            _ = Task.Run(async () =>
+        //            {
+        //                if (await callback.HandleCallbackAsync(reaction).ConfigureAwait(false))
+        //                {
+        //                    RemoveReactionCallback(message.Id);
+        //                }
+        //            });
+        //            break;
+        //        default:
+        //            if (await callback.HandleCallbackAsync(reaction).ConfigureAwait(false))
+        //            {
+        //                RemoveReactionCallback(message.Id);
+        //            }
+
+        //            break;
+        //    }
+        //}
+        protected async Task HandleReactionAsync(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
         {
             if (reaction.UserId == Discord.CurrentUser.Id)
             {
